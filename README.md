@@ -14,10 +14,15 @@ The commitment scheme is expected to output into the domain it can hash.
 An additively homomorphic commitment would be preferred yet is not required.
 
 `Blake2s-384` satisfies all of the above requirements yet is not additively
-homomorphic. Ajtai commitments are additively homomorphic, binding, and hiding
-when a random vector is additionally hashed (implied for a CRH which is as CR as
-optimal for its output length, stated within the LatticeFold paper). Ajtai
-commitments are accordingly preferred.
+homomorphic.
+
+Ajtai commitments are additively homomorphic, binding, and hiding when a random
+vector is additionally hashed (implied for a CRH which is as CR as optimal for
+its output length, stated within the LatticeFold paper).
+
+https://eprint.iacr.org/2016/997 presents an additively homomorphic,
+statistically hiding (hiding even when the adversary is allowed non-polylog
+algorithms) commitment with just 9 KB per commitment.
 
 ### The Signing Scheme
 
