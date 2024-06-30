@@ -11,9 +11,13 @@ randomness and `v` is a sequence of values. The commitment scheme is
 expected to be a collision-resistant hash where recovering the preimage is hard.
 The commitment scheme is expected to output into the domain it can hash.
 
-`Blake2s-384` satisfies all of the above requirements.
-
 An additively homomorphic commitment would be preferred yet is not required.
+
+`Blake2s-384` satisfies all of the above requirements yet is not additively
+homomorphic. Ajtai commitments are additively homomorphic, binding, and hiding
+when a random vector is additionally hashed (implied for a CRH which is as CR as
+optimal for its output length, stated within the LatticeFold paper). Ajtai
+commitments are accordingly preferred.
 
 ### The Signing Scheme
 
@@ -34,6 +38,8 @@ Without re-randomization, and without a threshold multisignature protocol,
 proving knowledge of the opening of a commitment would be acceptable (and have
 much clearer security). This collapses the signing scheme to the commitment
 scheme.
+
+Raccoon, with a non-interactive re-randomization, would be preferred.
 
 ### The Key-Exchange Mechanism
 
