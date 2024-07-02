@@ -6,19 +6,15 @@ An under-development post-quantum alternative to the Monero protocol.
 
 ### The Commitment Scheme
 
-We presume a post-quantum commitment scheme of `C(r, v...)` where `r` is some
-randomness and `v` is a sequence of values. The commitment scheme is
-expected to be a collision-resistant hash where recovering the preimage is hard.
-The commitment scheme is expected to output into the domain it can hash.
-
-An additively homomorphic commitment would be preferred yet is not required.
-
-`Blake2s-384` satisfies all of the above requirements yet is not additively
-homomorphic.
+We presume a post-quantum, additively homomorphic commitment scheme where
+committing to any randomness of sufficient entropy achieves perfect hiding (and
+the scheme itself if computationally binding). We denote this API as `C(v...)`,
+with the output being in the same domain as `v`.
 
 Ajtai commitments are additively homomorphic, binding, and hiding when a random
 vector is additionally hashed (implied for a CRH which is as CR as optimal for
-its output length, stated within the LatticeFold paper).
+its output length, as stated within the LatticeFold paper). If it's perfectly
+hiding needs to be followed up on.
 
 https://eprint.iacr.org/2016/997 presents an additively homomorphic,
 statistically hiding (hiding even when the adversary is allowed non-polylog
@@ -51,7 +47,10 @@ Raccoon, with a non-interactive re-randomization, would be preferred.
 We presume a post-quantum key-exchange mechanism (KEM). We bound it to not be
 subject to any patent claims.
 
-NTRU (Prime) would likely be the most performant and reviewed candidate.
+NTRU (Prime) would likely be the most performant and reviewed candidate. Classic
+McEliece has notably small ciphertexts and fast decryption. Since the
+key-exchange key is never placed on-chain, it's large size is potentially
+acceptable.
 
 ### Addresses
 
@@ -60,8 +59,7 @@ An address is derived as followed:
 1) Sample the signature verification key `S` (the 'spend' key).
 2) Sample the key-exchange key `V` (the view key).
 3) Sample randomness for the signature verification key `r`.
-4) If the commitment scheme is additively homomorphic, the address is the tuple
-   `(C(r, 0, S), V)`. Else, the address is the tuple `(C(r, S), V)`.
+4) The address is the tuple `(C(r, 0, S), V)`.
 
 ### Structures
 
@@ -81,8 +79,7 @@ Then we define a transaction kernel as a set of inputs and outputs.
 
 1) Sample randomness `r`.
 2) Derive the key commitment randomness `k`.
-3) If the commitment scheme is additively homomorphic, `K` is
-   `address.0 + C(k, 0, 0)`. Else, the `K` is `C(l, 0, address.0)`.
+3) `K` is `address.0 + C(k, 0, 0)`.
 4) Derive the key commitment randomness `a`.
 5) `A` is `C(a, amount)`.
 
@@ -141,19 +138,13 @@ commitment from `Membership`.
 
 ### Balance
 
-If the commitments are not additively homomorphic, `Balance` is done by opening
-all amount commitments, and proving their values sum to each other without
-overflowing. If the outputs commitments are additively homomorphic, `Balance` is
-done by proving the sum of all commitments is zero.
+`Balance` is done by proving the sum of all input commitments minus the sum of
+all output commitments is a commitment to zero.
 
 ### Range
 
-`Range` is not done if the commitments are not additvely homomorphic, due to
-being inlined with `Balance`.
-
-If the commitments are additively homomorphic, each amount commitment is opened
-and proven to be within an acceptable range as to not cause overflows when
-summed.
+Each amount commitment is opened and proven to be within an acceptable range, as
+to not cause overflows when summed.
 
 ## In Practice
 
